@@ -53,8 +53,8 @@ protected:
     std::vector<std::vector<std::pair<int, E> > > adj;
 public:
     size_t size();
-    void add_node( const N& );
-    void add_node( const std::vector<N>& );
+    void add_node( N& );
+    void add_node( std::vector<N>& );
 };
 
 //Functions definations for gmap class
@@ -105,7 +105,7 @@ size_t Base<N, E> :: size()
 }
 
 template<typename N, typename E>
-void Base<N, E> :: add_node(const N &temp)
+void Base<N, E> :: add_node( N &temp)
 {
 	if(idx.ispresent(temp) == false)
 	{
@@ -117,7 +117,7 @@ void Base<N, E> :: add_node(const N &temp)
 }
 
 template<typename N,typename E>
-void Base<N, E> :: add_node(const std::vector<N> &v)
+void Base<N, E> :: add_node( std::vector<N> &v)
 {
 	for(auto &x : v)
 	{
