@@ -26,6 +26,8 @@ public:
 		std::cout<< i <<std::endl<<std::endl;
 	}
 };
+
+
 void test_case_1()
 {
 	Base<node,int> a;
@@ -68,6 +70,7 @@ void test_case_2()
 	assert(b.count_node() == 6);
 }
 
+
 void test_case_3()
 {
 	Base<node,int> c;
@@ -97,6 +100,7 @@ void run_test()
 	test_case_2();
 	test_case_3();
 }
+
 int main()
 {
 	run_test();
