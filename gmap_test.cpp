@@ -1,6 +1,7 @@
 #include "graph_library.h"
 #include <iostream>
 #include <map>
+#include <cassert>
 
 class A
 {
@@ -15,12 +16,11 @@ int main()
     a.a=b.a=1;
     mp[a]=2;
     mp[b]=5;
-
-    std::cout << mp[a] << std::endl;
-    std::cout << mp[b] << std::endl;
-	 bool ans = mp.ispresent(a);
-     cout<<ans<<endl;
+    
+    assert(mp[a] == 2);
+    assert(mp[b] == 5);
+    assert(mp.ispresent(a)== true);
      auto c = a;
-    std::cout<< mp.ispresent(c) << std::endl;
+    assert(mp.ispresent(c) == false);
     return 0;
 }

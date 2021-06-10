@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility> //for using pairs
 #include <cstdint> // for fixed sized integers
+#include <functional> //for using std::function
 #include <iostream>
 
 #define INF 4e18 //infinity for comparison purposes in Dijkstra and Bellman Ford
@@ -62,10 +63,12 @@ private:
 protected:
     gmap<N, int> idx;
     std::map<int, N> node;
-    int n = 0;
+    int n = 0, e = 0;
+    std::map<std::pair<int,int>, bool> edg;   
     std::vector<std::vector<std::pair<int, E> > > adj;
 public:
-    size_t size();
+    size_t count_node();
+    size_t count_edge();
     void add_node( N& );
     void add_node( std::vector<N>& );
     std::vector<traversal<N,int64_t> > bfs(N&, int);
@@ -78,7 +81,7 @@ class Directed_Graph :
 {
     public:
         bool is_DAG();
-        std::vector<vector<N> > SCC();
+        std::vector<std::vector<N> > SCC();
         std::vector<N> Topo_Sort();
 };
 
@@ -181,9 +184,15 @@ void traversal<N, T> :: print()
 
 // Functions of Base Class
 template<typename N,typename E>
-size_t Base<N, E> :: size()
+size_t Base<N, E> :: count_node()
 {
     return n;
+}
+
+template<typename N,typename E>
+size_t Base<N, E> :: count_edge()
+{
+    return e;
 }
 
 template<typename N, typename E>
