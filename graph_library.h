@@ -224,7 +224,7 @@ std::vector<traversal<N,int> > Base<N, E> :: bfs( N &source_node, int depth = IN
     int src = idx[source_node];
     bool vis[n] = { 0 };
     int dis[n];
-    queue <int> que;
+    std::queue <int> que;
     std::vector<traversal<N, int> > ans;
     ans.push_back(traversal{source_node, source_node , 0});
     que.push(src);
@@ -254,7 +254,7 @@ std::vector<traversal<N, int> > Base<N, E> ::dfs(N& source_node, int depth = INT
     int src = idx[source_node];
     bool vis[n] = { 0 };
     int dis[n];
-    stack <int> stk;
+    std::stack <int> stk;
     std::vector<traversal<N, int> > ans;
     ans.push_back(traversal{ source_node, source_node , 0 });
     stk.push(src);
@@ -307,7 +307,7 @@ bool Directed_Graph<N, E> ::is_dag()    //TODO same implementation using stack i
                 }
                 else if (vis[x] == 1)
                 {
-                    return false
+                    return false;
                 }
             }
             vis[src] = 2;   //color the node as black
@@ -332,7 +332,7 @@ template<typename N, typename E>
 std::vector<std::vector<N> >  Directed_Graph<N, E> ::scc()
 {
     //Kosaraju algorithm
-    stack<int> stk;
+    std::stack<int> stk;
     bool vis[n] = { 0 };
 
 }
@@ -340,6 +340,7 @@ std::vector<std::vector<N> >  Directed_Graph<N, E> ::scc()
 template<typename N, typename E>
 std::vector<N> Directed_Graph<N, E> ::topo_sort()
 {
+    bool vis[n] = { 0 };
     int current_time = 0;
     int in_time[n], out_time[n];
     auto detect = [&](int y)->bool              //One possible improvement is to replace these lambda functions by a private function in the class itself
@@ -359,7 +360,7 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
                 }
                 else if (vis[x] == 1)
                 {
-                    return false
+                    return false;
                 }
             }
             current_time += 1;
