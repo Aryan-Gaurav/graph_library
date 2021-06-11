@@ -191,19 +191,9 @@ class graph:
 };
 
 
-//Functions definations for gmap class
 
-template<typename K, typename V>
-V& gmap<K, V>::operator[](K& key)
-{
-    return mp [ & key ];
-}
 
-template<typename K, typename V>
-const bool gmap<K, V>::ispresent(K& key)
-{
-    return mp.find( & key ) != mp.end();
-}
+
 
 //Functions definations for struct traversal
 
@@ -511,5 +501,7 @@ void disjoint_set_union :: do_union(int x,int y)
     }
     
 }
+
+#include "gmap.inc"
 
 #endif
