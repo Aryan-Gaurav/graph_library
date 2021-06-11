@@ -73,15 +73,28 @@ public:
     size_t count_edge();
     void add_node( N& );
     void add_node( std::vector<N>& );
-    std::vector<traversal<N,int32_t> > bfs(N&, int);
-    std::vector<traversal<N,int32_t> > dfs(N&, int);
+    std::vector<traversal<N,int32_t> > bfs(N&, int depth = INT32_MAX);
+    std::vector<traversal<N,int32_t> > dfs(N&, int depth = INT32_MAX);
 };
+
+/*
+    How to access superclass member variables
+    https://stackoverflow.com/questions/4643074/why-do-i-have-to-access-template-base-class-members-through-the-this-pointer
+    https://stackoverflow.com/questions/4010281/accessing-protected-members-of-superclass-in-c-with-templates
+*/
 
 template<typename N, typename E>
 class Directed_Graph :
     public virtual Base<N, E>
 {
     public:
+        using Base<N, E> :: idx;
+        using Base<N, E> :: node;
+        using Base<N, E> :: n;
+        using Base<N, E> :: e;
+        using Base<N, E> :: adj;
+        
+
         bool is_dag();
         std::vector<std::vector<N> > scc();
         std::vector<N> topo_sort();
@@ -93,6 +106,8 @@ class disjoint_set_union    //required for krushkal algorithm
         std::vector<int> parent, size;
     public:
         disjoint_set_union(int);
+        const bool is_same(int,int);
+        int find_size(int);
         int find_parent(int);
         void do_union(int,int);
 };
@@ -102,9 +117,15 @@ class Undirected_Graph:
     public virtual Base<N, E>
 {     
     public:
-        template<T>
+        using Base<N, E> :: idx;
+        using Base<N, E> :: node;
+        using Base<N, E> :: n;
+        using Base<N, E> :: e;
+        using Base<N, E> :: adj;
+
+        template<typename T>
             auto  prims_mst(std::function <T(E)>);
-        template<T>
+        template<typename T>
             auto krushkal_mst(std::function <T(E)>);
 };
 
@@ -114,6 +135,13 @@ class Unweighted_Graph:
     public virtual Base<N, E>
 {
     public:
+        using Base<N, E> :: idx;
+        using Base<N, E> :: node;
+        using Base<N, E> :: n;
+        using Base<N, E> :: e;
+        using Base<N, E> :: adj;
+
+
         void add_edge(N&, N&);
 
         std::vector <traversal<N,int> > single_source_shortest_path(N&);
@@ -126,10 +154,17 @@ class Weighted_Graph:
 {
     private:
         template<typename T>
-            auto Dijkstra(int, std::function< T (E)> );   //total 2 types of each for float and int
+            auto dijkstra(int, std::function< T (E)> );   //total 2 types of each for float and int
         template<typename T>
-            auto Bellman_Ford(int, std::function< T (E)> );
+            auto bellman_ford(int, std::function< T (E)> );
     public:
+        using Base<N, E> :: idx;
+        using Base<N, E> :: node;
+        using Base<N, E> :: n;
+        using Base<N, E> :: e;
+        using Base<N, E> :: adj;
+
+
         void add_edge(N&, N&, E&);   //distinction of function so no abuse of both add edge methods
         
         
@@ -230,15 +265,19 @@ void Base<N, E> :: add_node( std::vector<N> &v)
 	}
 }
 
+/*
+Read more about default arguments in fucntions
+https://stackoverflow.com/questions/32105975/why-cant-i-have-template-and-default-arguments
+*/
 template<typename N, typename E>
-std::vector<traversal<N,int> > Base<N, E> :: bfs( N &source_node, int depth = INT32_MAX)
+std::vector<traversal<N,int> > Base<N, E> :: bfs( N &source_node, int depth)
 {
     int src = idx[source_node];
     bool vis[n] = { 0 };
     int dis[n];
     std::queue <int> que;
     std::vector<traversal<N, int> > ans;
-    ans.push_back(traversal{source_node, source_node , 0});
+    ans.push_back(traversal<N,int>{source_node, source_node , 0});
     que.push(src);
     vis[src]=1;
     dis[src]=0;
@@ -252,7 +291,7 @@ std::vector<traversal<N,int> > Base<N, E> :: bfs( N &source_node, int depth = IN
             {
                 vis[x] = 1;
                 dis[x] = dis[t] + 1;
-                ans.push_back( traversal {node[x], node[t], dis[x] } );
+                ans.push_back( traversal <N,int> {node[x], node[t], dis[x] } );
                 que.push(x);
             }
         }
@@ -261,14 +300,14 @@ std::vector<traversal<N,int> > Base<N, E> :: bfs( N &source_node, int depth = IN
 }
 
 template<typename N, typename E>
-std::vector<traversal<N, int> > Base<N, E> ::dfs(N& source_node, int depth = INT32_MAX)
+std::vector<traversal<N, int> > Base<N, E> ::dfs(N& source_node, int depth)
 {
     int src = idx[source_node];
     bool vis[n] = { 0 };
     int dis[n];
     std::stack <int> stk;
     std::vector<traversal<N, int> > ans;
-    ans.push_back(traversal{ source_node, source_node , 0 });
+    ans.push_back(traversal<N,int> { source_node, source_node , 0 });
     stk.push(src);
     vis[src] = 1;
     dis[src] = 0;
@@ -282,7 +321,7 @@ std::vector<traversal<N, int> > Base<N, E> ::dfs(N& source_node, int depth = INT
             {
                 vis[x] = 1;
                 dis[x] = dis[t] + 1;
-                ans.push_back(traversal{ node[x], node[t], dis[x] });
+                ans.push_back(traversal<N,int> { node[x], node[t], dis[x] });
                 stk.push(x);
             }
         }
@@ -295,6 +334,11 @@ std::vector<traversal<N, int> > Base<N, E> ::dfs(N& source_node, int depth = INT
 template<typename N, typename E>
 bool Directed_Graph<N, E> ::is_dag()    //TODO same implementation using stack i.e. without the recursive function
 {
+    //temprorary soution
+    // auto n = Base<N,E> :: n;
+    // auto adj = Base<N,E> ::adj;
+
+
     int vis[n] = { 0 };
 
 
@@ -325,7 +369,7 @@ bool Directed_Graph<N, E> ::is_dag()    //TODO same implementation using stack i
             vis[src] = 2;   //color the node as black
             return isok;
         };
-        return lambda(src, lambda);
+        return lambda(y, lambda);
     };
 
     
@@ -344,9 +388,9 @@ template<typename N, typename E>
 std::vector<std::vector<N> >  Directed_Graph<N, E> ::scc()
 {
     //Kosaraju algorithm
-    std::stack<int> stk;
-    bool vis[n] = { 0 };
-
+    // std::stack<int> stk;
+    // bool vis[n] = { 0 };
+    return {};
 }
 
 template<typename N, typename E>
@@ -380,7 +424,7 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
             vis[src] = 2;   //color the node as black
             return isok;
         };
-        return lambda(src, lambda);
+        return lambda(y, lambda);
     };
 
     for (size_t i = 0; i < n; i++)
@@ -393,12 +437,16 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
             }
         }
     }
+
     std::vector<int> v(n);
     for (size_t i = 0; i < n; i++)
     {
         v[i] = i;
     }
-    sort(v.begin(), v.end(), [&](int i, int j)  //sort the nodes by decreasing out times for topological sort. For more details refer Introduction to Algorithms by Cormen
+    /*
+    Sort the nodes by decreasing out times for topological sort. For more details refer Introduction to Algorithms by Cormen
+    */
+    sort(v.begin(), v.end(), [&](int i, int j) 
         {
             return out_time[i] > out_time[j];
         });
@@ -434,18 +482,34 @@ int disjoint_set_union :: find_parent(int x)
     return parent[x];
 }
 
+const bool disjoint_set_union :: is_same(int x,int y)
+{
+    int px = find_parent(x) , py = find_parent(y);
+    return px == py;
+}
+
+int disjoint_set_union :: find_size(int x)
+{
+    int px = find_parent(x);
+    return size[px];
+}
+
 void disjoint_set_union :: do_union(int x,int y)
 {
     int px = find_parent(x), py = find_parent(y);
-    if(px == py)
+    if (px == py)
         return;
-    if(size[px] < size[py])
+    if (size[px] >= size[py])
+    {
+        size[px] += size[py];
+        parent[y] = px;
+        parent[py] = px;
+    }
+    else
     {
         do_union(y,x);
-        return;
     }
-    size[px] += size[py];
-    parent[py] = px;
+    
 }
 
 #endif
