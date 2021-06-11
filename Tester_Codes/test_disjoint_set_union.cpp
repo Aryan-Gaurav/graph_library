@@ -1,4 +1,4 @@
-#include "graph_library.h"
+#include "../source/graph_library.h"
 #include <cassert>
 
 void test_case_1()
