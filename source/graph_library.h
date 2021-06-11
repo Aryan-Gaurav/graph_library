@@ -75,6 +75,10 @@ public:
     void add_node( std::vector<N>& );
     std::vector<traversal<N,int32_t> > bfs(N&, int depth = INT32_MAX);
     std::vector<traversal<N,int32_t> > dfs(N&, int depth = INT32_MAX);
+    /*
+        Read more about default arguments in fucntions
+        https://stackoverflow.com/questions/32105975/why-cant-i-have-template-and-default-arguments
+    */
 };
 
 /*
@@ -189,72 +193,6 @@ class graph:
         void remove_node(N&);
         void remove_edge(N&, N&);
 };
-
-
-
-/*
-Read more about default arguments in fucntions
-https://stackoverflow.com/questions/32105975/why-cant-i-have-template-and-default-arguments
-*/
-template<typename N, typename E>
-std::vector<traversal<N,int> > Base<N, E> :: bfs( N &source_node, int depth)
-{
-    int src = idx[source_node];
-    bool vis[n] = { 0 };
-    int dis[n];
-    std::queue <int> que;
-    std::vector<traversal<N, int> > ans;
-    ans.push_back(traversal<N,int>{source_node, source_node , 0});
-    que.push(src);
-    vis[src]=1;
-    dis[src]=0;
-    while(!que.empty())
-    {
-        int t = que.front();
-        que.pop();
-        for(auto &[x,y]:adj[t])
-        {
-            if(! vis[x] && dis[x] < depth-1)
-            {
-                vis[x] = 1;
-                dis[x] = dis[t] + 1;
-                ans.push_back( traversal <N,int> {node[x], node[t], dis[x] } );
-                que.push(x);
-            }
-        }
-    }
-    return ans;
-}
-
-template<typename N, typename E>
-std::vector<traversal<N, int> > Base<N, E> ::dfs(N& source_node, int depth)
-{
-    int src = idx[source_node];
-    bool vis[n] = { 0 };
-    int dis[n];
-    std::stack <int> stk;
-    std::vector<traversal<N, int> > ans;
-    ans.push_back(traversal<N,int> { source_node, source_node , 0 });
-    stk.push(src);
-    vis[src] = 1;
-    dis[src] = 0;
-    while (! stk.empty() )
-    {
-        int t = stk.top();
-        stk.pop();
-        for (auto& [x, y] : adj[t])
-        {
-            if (!vis[x] && dis[x] < depth - 1)
-            {
-                vis[x] = 1;
-                dis[x] = dis[t] + 1;
-                ans.push_back(traversal<N,int> { node[x], node[t], dis[x] });
-                stk.push(x);
-            }
-        }
-    }
-    return ans;
-}
 
 
 //function definations of Directed_Graph
@@ -405,7 +343,7 @@ int disjoint_set_union :: find_parent(int x)
 {
     if(parent[x] == x)
         return x;
-    parent [x] = find_parent(parent [x] );  //try to implemtnt using stack
+    parent [x] = find_parent(parent [x] );  //try to implement using stack
     return parent[x];
 }
 
