@@ -1,3 +1,6 @@
+#include <queue>    //for breadth_first_search (bfs)
+#include <stack>    //for depth_first_search (dfs)
+
 // Functions of Base Class
 
 template<typename N,typename E>
