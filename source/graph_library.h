@@ -9,7 +9,7 @@
 #include <functional> //for using std::function
 #include <queue>    //for breadth_first_search (bfs)
 #include <stack>    //for depth_first_search (dfs)
-#include <iostream>
+
 
 #define INF 4e18 //infinity for comparison purposes in Dijkstra and Bellman Ford
 
@@ -189,36 +189,6 @@ class graph:
         void remove_node(N&);
         void remove_edge(N&, N&);
 };
-
-
-
-
-
-
-//Functions definations for struct traversal
-
-template<typename N, typename T>
-traversal<N, T> :: traversal()
-{
-    distance = T(2e9);  //typecast 2e9 ~ INT_MAX
-}
-
-template<typename N, typename T>
-void traversal<N, T> :: set_value(N a, N b, T dis)
-{
-    node = a;
-    parent = b;
-    distance = dis;
-}
-
-template<typename N, typename T>
-void traversal<N, T> :: print()
-{
-    node.print();
-    std::cout << "<--";
-    parent.print();
-    std::cout << distance << std::endl;
-}
 
 
 // Functions of Base Class
@@ -503,5 +473,7 @@ void disjoint_set_union :: do_union(int x,int y)
 }
 
 #include "gmap.inc"
+#include "struct_traversal.inc"
+
 
 #endif
