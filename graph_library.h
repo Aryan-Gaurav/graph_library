@@ -87,19 +87,31 @@ class Directed_Graph :
         std::vector<N> topo_sort();
 };
 
+class disjoint_set_union    //required for krushkal algorithm
+{
+    private:
+        std::vector<int> parent, size;
+    public:
+        disjoint_set_union(int);
+        int find_parent(int);
+        void do_union(int,int);
+};
+
 template<typename N, typename E>
 class Undirected_Graph:
     public virtual Base<N, E>
-{
+{     
     public:
-        std::pair <int64_t, std::vector<E> > prims_mst();
-        std::pair <int64_t, std::vector<E> > krushkal_mst();
+        template<T>
+            auto  prims_mst(std::function <T(E)>);
+        template<T>
+            auto krushkal_mst(std::function <T(E)>);
 };
 
 
-template<typename N>
+template<typename N,typename E> //see about how to implement only typename N in this class so that if true is passed is_weighted then only take 4th argument otherwise no
 class Unweighted_Graph:
-    public virtual Base<N, int>
+    public virtual Base<N, E>
 {
     public:
         void add_edge(N&, N&);
@@ -134,7 +146,7 @@ class Weighted_Graph:
 template<typename N=int, bool is_directed=0, bool is_weighted=0, typename E = int>
 class graph:
     public virtual std::conditional<is_directed, Directed_Graph<N,E>, Undirected_Graph<N,E> >::type,
-    public virtual std::conditional<is_weighted, Weighted_Graph<N,E>, Unweighted_Graph<N> >::type
+    public virtual std::conditional<is_weighted, Weighted_Graph<N,E>, Unweighted_Graph<N,E> >::type
 {
     public:
         graph(int);
@@ -400,5 +412,40 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
     return ans;
 }
 
+
+//Implementation of Disjoint Set Union data structure
+
+disjoint_set_union :: disjoint_set_union(int n)
+{
+    parent.resize(n+1);
+    size.resize(n+1);
+    for(size_t i=0;i<n;i++)
+    {
+        parent[i] = i;
+        size[i] = 1;
+    }
+}
+
+int disjoint_set_union :: find_parent(int x)
+{
+    if(parent[x] == x)
+        return x;
+    parent [x] = find_parent(parent [x] );  //try to implemtnt using stack
+    return parent[x];
+}
+
+void disjoint_set_union :: do_union(int x,int y)
+{
+    int px = find_parent(x), py = find_parent(y);
+    if(px == py)
+        return;
+    if(size[px] < size[py])
+    {
+        do_union(y,x);
+        return;
+    }
+    size[px] += size[py];
+    parent[py] = px;
+}
 
 #endif
