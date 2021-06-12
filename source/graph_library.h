@@ -132,9 +132,9 @@ class Undirected_Graph:
             https://stackoverflow.com/questions/44864576/returning-different-type-from-a-function-template-depending-on-a-condition
         */
         template<typename T>
-            auto  prims_mst(std::function <T(E)>);
+            auto  prims_minimum_spanning_tree(std::function <T(E)>);
         template<typename T>
-            auto krushkal_mst(std::function <T(E)>);
+            auto krushkal_minimum_spanning_tree(std::function <T(E)>);
 };
 
 
@@ -211,68 +211,6 @@ template<bool is_integral> struct get_data_type; //for getting which data type t
 
 
 
-#include <queue>
-#include <array>
-#include <type_traits>
-
-
-template <typename N, typename E>
-template <typename T>
-auto Undirected_Graph<N, E>::krushkal_mst(std::function<T(E)> get_weight)
-{
-    /*
-        Read more about is_integral<T>::value and is_integral_v<T> at
-        https://en.cppreference.com/w/cpp/types/is_integral
-    */
-    
-    if constexpr (std::is_integral_v<T>) // constexpr only necessary on first statement
-    {
-        using type = typename int64_t;
-    }
-    else if (std::is_floating_point_v<T>) // automatically constexpr
-    {
-        using type = typename long double;
-    }
-    else
-    {
-        /*
-            Donot use assert false beacuse it can be overrideen by -DNDEBUG flag
-            Read more at https://stackoverflow.com/questions/57908992/better-alternatives-to-assertfalse-in-c-c
-        */
-        //assert(false)
-        std :: cout<< "You didnot pass a valid function" << std :: endl;
-        std :: abort();
-    }
-    // else throw error; //see how to throw an error
-    type total_weight = 0;
-    std::priority_queue<std::pair<type, std::array<int, 2> > ,
-                        std::vector<std::pair<type, std::array<int, 2> > > ,
-                        std::greater<std::pair<type, std::array<int, 2> > > > pq;
-
-    for (size_t i = 0; i < n; i++)
-    {
-        for(auto &[x,y]:adj[i])
-        {
-            pq.push({get_weight(y),{x,i}});
-        }
-    }
-    disjoint_set_union DSU(n);
-
-    std::vector<full_edge<N,E> > v;
-
-    while(!pq.empty())
-    {
-        auto [weight_of_edge, index_of_nodes] = pq.top();
-        pq.pop();
-        if(DSU.is_same(index_of_nodes[0],index_of_nodes[1]) == false)
-        {
-            DSU.do_union(index_of_nodes[0],index_of_nodes[1]);
-            total_weight += weight_of_edge;                                                       // |---> implement get_edge function or vector
-            v.push_back(full_edge<N,E> {node[index_of_nodes[0]], node[index_of_nodes[1]], get_edge[{index_of_nodes[0],index_of_nodes[1]}]});
-        }
-    }
-    return make_pair(total_weight,v) ;
-}
 
 #include "gmap.inc"
 #include "struct_traversal.inc"
@@ -280,5 +218,7 @@ auto Undirected_Graph<N, E>::krushkal_mst(std::function<T(E)> get_weight)
 #include "Directed_Graph.inc"
 #include "disjoint_set_union.inc"
 #include "get_data_type.inc"
+#include "Undireced_Graph_krushkal.inc"
+
 
 #endif
