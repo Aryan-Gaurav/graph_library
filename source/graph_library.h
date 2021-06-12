@@ -65,7 +65,7 @@ protected:
     gmap<N, int> idx;
     std::map<int, N> node;
     int n = 0, e = 0;
-    std::map<std::pair<int,int>, bool> edg;   
+    std::map<std::pair<int,int>, E> get_edge;   
     std::vector<std::vector<std::pair<int, E> > > adj;
 public:
     size_t count_node();
@@ -126,6 +126,11 @@ class Undirected_Graph:
         using Base<N, E> :: e;
         using Base<N, E> :: adj;
 
+        /*
+            For more on how to return different types based on tepmplate read at
+            https://stackoverflow.com/questions/48199813/how-to-use-condition-to-check-if-typename-t-is-integer-type-of-float-type-in-c
+            https://stackoverflow.com/questions/44864576/returning-different-type-from-a-function-template-depending-on-a-condition
+        */
         template<typename T>
             auto  prims_mst(std::function <T(E)>);
         template<typename T>
@@ -193,20 +198,87 @@ class graph:
         void remove_edge(N&, N&);
 };
 
+template<typename N,typename E>
+struct full_edge
+{
+    N u,v;
+    E edge;
+};
 
 
 
+template<bool is_integral> struct get_data_type; //for getting which data type to be used for calculations in edge weights
 
 
 
+#include <queue>
+#include <array>
+#include <type_traits>
 
 
+template <typename N, typename E>
+template <typename T>
+auto Undirected_Graph<N, E>::krushkal_mst(std::function<T(E)> get_weight)
+{
+    /*
+        Read more about is_integral<T>::value and is_integral_v<T> at
+        https://en.cppreference.com/w/cpp/types/is_integral
+    */
+    
+    if constexpr (std::is_integral_v<T>) // constexpr only necessary on first statement
+    {
+        using type = typename int64_t;
+    }
+    else if (std::is_floating_point_v<T>) // automatically constexpr
+    {
+        using type = typename long double;
+    }
+    else
+    {
+        /*
+            Donot use assert false beacuse it can be overrideen by -DNDEBUG flag
+            Read more at https://stackoverflow.com/questions/57908992/better-alternatives-to-assertfalse-in-c-c
+        */
+        //assert(false)
+        std :: cout<< "You didnot pass a valid function" << std :: endl;
+        std :: abort();
+    }
+    // else throw error; //see how to throw an error
+    type total_weight = 0;
+    std::priority_queue<std::pair<type, std::array<int, 2> > ,
+                        std::vector<std::pair<type, std::array<int, 2> > > ,
+                        std::greater<std::pair<type, std::array<int, 2> > > > pq;
 
+    for (size_t i = 0; i < n; i++)
+    {
+        for(auto &[x,y]:adj[i])
+        {
+            pq.push({get_weight(y),{x,i}});
+        }
+    }
+    disjoint_set_union DSU(n);
+
+    std::vector<full_edge<N,E> > v;
+
+    while(!pq.empty())
+    {
+        auto [weight_of_edge, index_of_nodes] = pq.top();
+        pq.pop();
+        if(DSU.is_same(index_of_nodes[0],index_of_nodes[1]) == false)
+        {
+            DSU.do_union(index_of_nodes[0],index_of_nodes[1]);
+            total_weight += weight_of_edge;                                                       // |---> implement get_edge function or vector
+            v.push_back(full_edge<N,E> {node[index_of_nodes[0]], node[index_of_nodes[1]], get_edge[{index_of_nodes[0],index_of_nodes[1]}]});
+        }
+    }
+    return make_pair(total_weight,v) ;
+}
 
 #include "gmap.inc"
 #include "struct_traversal.inc"
 #include "Base.inc"
 #include "Directed_Graph.inc"
 #include "disjoint_set_union.inc"
+#include "get_data_type.inc"
 
 #endif
