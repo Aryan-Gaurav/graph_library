@@ -2,6 +2,70 @@
 #include <array>
 #include <type_traits> //for using std::is_integral<T>::value
 
+template<class N, class E> 
+template<class T> 
+auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)> get_weight)
+{
+
+    if(std::is_integral<T>::value == false && std::is_floating_point<T>::value == false) //this means the return type is neither integral nor floating point
+    {
+        /*
+            Donot use assert false beacuse it can be overrideen by -DNDEBUG flag
+            Read more at https://stackoverflow.com/questions/57908992/better-alternatives-to-assertfalse-in-c-c
+        */
+        //assert(false)
+        std :: cout<< "You did not pass a valid function in Prims Minimum Spanning Tree" << std :: endl;
+        std :: cout<< "Now the program will abort" <<std :: endl;
+        std :: abort();
+    }
+
+    using type = typename get_type<std::is_integral<T>::value>::type; //find which type of variable to use
+
+    type total_weight = 0;
+    std::vector<full_edge<N,E> > v;
+
+    std::vector<type> distance(n,INF);
+    bool in_mst[n] = { false };
+    int parent[n];
+    memset(parent,-1,sizeof(parent));
+
+    std::priority_queue<std::pair<type, int> ,
+                        std::vector<std::pair<type, int> > ,
+                        std::greater<std::pair<type, int> > > pq;
+
+    pq.push({ 0, 0 });
+    dis[0] = 0;
+    while ( pq.empty() == false)
+    {
+        auto [weight, current_node] = pq.top();
+        pq.pop();
+        if(in_mst[current_node] == false)
+        {
+            in_mst [ current_node ] = true;
+            total_weight += weight;
+            if(parent[current_node] != -1)                                                      // |------>Remember to implement it
+                v.push_back(full_edge<N,E> { node[current_node], node[parent[current_node]], get_edge[{ current_node, parent[current_node] }] } );
+            for (auto &[adjacent_node,edge]:adj[i])
+            {
+                if(in_mst[adjacent_node] == false)
+                {
+                    if(auto new_weight = get_weight(edge); dis[adjacent_node] > new_weight)
+                    {
+                        dis[ adjacent_node ] = new_weight;
+                        parent[ adjacent_node ] = i;
+                        pq.push({ new_weight , adjacent_node});
+                    }
+                }
+            }
+        }
+    }
+
+
+    return make_pair(total_weight, v);
+}
+
+
+
 
 template <typename N, typename E>
 template <typename T>
@@ -28,6 +92,7 @@ auto Undirected_Graph<N, E>::krushkal_minimum_spanning_tree(std::function<T(E)> 
 
 
     type total_weight = 0;
+    std::vector<full_edge<N,E> > v;
 
     std::priority_queue<std::pair<type, std::array<int, 2> > ,
                         std::vector<std::pair<type, std::array<int, 2> > > ,
@@ -40,11 +105,10 @@ auto Undirected_Graph<N, E>::krushkal_minimum_spanning_tree(std::function<T(E)> 
             pq.push({ get_weight(y), { x, i } });
         }
     }
+
     disjoint_set_union DSU(n);
 
-    std::vector<full_edge<N,E> > v;
-
-    while (!pq.empty())
+    while ( pq.empty() == false)
     {
         auto [weight_of_edge, index_of_nodes] = pq.top();
         pq.pop();
