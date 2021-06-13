@@ -157,7 +157,7 @@ class Unweighted_Graph:
 
     public:
         
-        void add_edge(N&, N&);
+        // void add_edge(N&, N&);
 
         std::vector <traversal<N,int> > single_source_shortest_path(N&);
         std::vector <node_pair<N,int> > all_pair_shortest_path();
@@ -182,7 +182,7 @@ class Weighted_Graph:
 
     public:
         
-        void add_edge(N&, N&, E&);   //distinction of function so no abuse of both add edge methods
+        // void add_edge(N&, N&, E&);   //distinction of function so no abuse of both add edge methods
         
         
         template<typename T>
@@ -195,14 +195,19 @@ class Weighted_Graph:
         
 };
 
-template<typename N=int, bool is_directed=0, bool is_weighted=0, typename E = int>
+template<typename N = int, bool is_directed = 0, bool is_weighted = 0, typename E = int>
 class graph:
     public virtual std::conditional<is_directed, Directed_Graph<N,E>, Undirected_Graph<N,E> >::type,
     public virtual std::conditional<is_weighted, Weighted_Graph<N,E>, Unweighted_Graph<N,E> >::type
 {
     public:
-        graph(int);
+        graph(int); //Remember to update the superclass base variables
         graph();
+        /*
+        This 1 has been added to ensure that in case of unweighted graph and user tries to insert using (N&, N&) it works.
+        Remember that it works only when user donot specify a specific data type for Edges.
+        */
+        void add_edge(N&,N&,E& = 1);
         void remove_node(N&);
         void remove_edge(N&, N&);
 };
@@ -227,6 +232,6 @@ template<bool is_integral> struct get_data_type; //for getting which data type t
 #include "disjoint_set_union.inc"
 #include "get_data_type.inc"
 #include "Undirected_Graph.inc"
-
+#include "graph.inc"
 
 #endif
