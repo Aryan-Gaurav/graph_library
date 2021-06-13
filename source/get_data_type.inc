@@ -4,13 +4,13 @@ https://stackoverflow.com/questions/48199813/how-to-use-condition-to-check-if-ty
 */
 
 template<> 
-struct get_type<true>       //Do the calculations in 64 bit integer when edge weight is integer type 
+struct get_data_type<true>       //Do the calculations in 64 bit integer when edge weight is integer type 
 {
 	using type = int64_t;
 };
 
 template<> 
-struct get_type<false>  //Do the calculations in long double when edge weights are in floating point
+struct get_data_type<false>  //Do the calculations in long double when edge weights are in floating point
 {
  	using type = long double;
 };

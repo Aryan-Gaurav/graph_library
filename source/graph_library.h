@@ -23,6 +23,20 @@ class gmap
 		const bool ispresent(K&);
 };
 
+template<bool is_integral> struct get_data_type; //for getting which data type to be used for calculations in edge weights
+
+class disjoint_set_union    //required for krushkal algorithm
+{
+    private:
+        std::vector<int> parent, size;
+    public:
+        disjoint_set_union(int);
+        const bool is_same(int,int);
+        int find_size(int);
+        int find_parent(int);
+        void do_union(int,int);
+};
+
 template<typename N, typename T>
 struct traversal
 {
@@ -64,7 +78,7 @@ private:
 protected:
     gmap<N, int> idx;
     std::map<int, N> node;
-    int n = 0, e = 0;
+    int n, e;
     std::map<std::pair<int,int>, E> get_edge;   
     std::vector<std::vector<std::pair<int, E> > > adj;
     bool is_weighted, is_directed;  //will get value from main graph class from template arguments
@@ -92,14 +106,13 @@ class Directed_Graph :
     public virtual Base<N, E>
 {
     protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
-        using Base<N, E> :: idx;
         using Base<N, E> :: node;
         using Base<N, E> :: n;
-        using Base<N, E> :: e;
         using Base<N, E> :: adj;
+        using Base<N, E> :: is_weighted;
+        using Base<N, E> :: is_directed;
 
     public:
-        
         
 
         bool is_dag();
@@ -107,17 +120,7 @@ class Directed_Graph :
         std::vector<N> topo_sort();
 };
 
-class disjoint_set_union    //required for krushkal algorithm
-{
-    private:
-        std::vector<int> parent, size;
-    public:
-        disjoint_set_union(int);
-        const bool is_same(int,int);
-        int find_size(int);
-        int find_parent(int);
-        void do_union(int,int);
-};
+
 
 template<typename N, typename E>
 class Undirected_Graph:
@@ -129,6 +132,9 @@ class Undirected_Graph:
         using Base<N, E> :: n;
         using Base<N, E> :: e;
         using Base<N, E> :: adj;
+        using Base<N, E> :: get_edge;
+        using Base<N, E> :: is_weighted;
+        using Base<N, E> :: is_directed;
       
     public:
         /*
@@ -153,7 +159,9 @@ class Unweighted_Graph:
         using Base<N, E> :: n;
         using Base<N, E> :: e;
         using Base<N, E> :: adj;
-
+        using Base<N, E> :: get_edge;
+        using Base<N, E> :: is_weighted;
+        using Base<N, E> :: is_directed;
 
     public:
         
@@ -178,7 +186,9 @@ class Weighted_Graph:
         using Base<N, E> :: n;
         using Base<N, E> :: e;
         using Base<N, E> :: adj;
-
+        using Base<N, E> :: get_edge;
+        using Base<N, E> :: is_weighted;
+        using Base<N, E> :: is_directed;
 
     public:
         
@@ -200,6 +210,14 @@ class graph:
     public virtual std::conditional<is_directed, Directed_Graph<N,E>, Undirected_Graph<N,E> >::type,
     public virtual std::conditional<is_weighted, Weighted_Graph<N,E>, Unweighted_Graph<N,E> >::type
 {
+    protected:
+        using Base<N, E> :: idx;
+        using Base<N, E> :: node;
+        using Base<N, E> :: n;
+        using Base<N, E> :: e;
+        using Base<N, E> :: adj;
+        using Base<N, E> :: get_edge;
+
     public:
         graph(int); //Remember to update the superclass base variables
         graph();
@@ -208,8 +226,8 @@ class graph:
         Remember that it works only when user donot specify a specific data type for Edges.
         */
         void add_edge(N&,N&,E& = 1);
-        void remove_node(N&);
-        void remove_edge(N&, N&);
+        // void remove_node(N&);
+        // void remove_edge(N&, N&);
 };
 
 template<typename N,typename E>
@@ -219,7 +237,7 @@ struct full_edge
     E edge;
 };
 
-template<bool is_integral> struct get_data_type; //for getting which data type to be used for calculations in edge weights
+
 
 
 

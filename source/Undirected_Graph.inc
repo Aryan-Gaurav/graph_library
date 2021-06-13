@@ -19,7 +19,7 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)>
         std :: abort();
     }
 
-    using type = typename get_type<std::is_integral<T>::value>::type; //find which type of variable to use
+    using type = typename get_data_type<std::is_integral<T>::value>::type; //find which type of variable to use
 
     type total_weight = 0;
     std::vector<full_edge<N,E> > v;
@@ -34,7 +34,7 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)>
                         std::greater<std::pair<type, int> > > pq;
 
     pq.push({ 0, 0 });
-    dis[0] = 0;
+    distance[0] = 0;
     while ( pq.empty() == false)
     {
         auto [weight, current_node] = pq.top();
@@ -45,14 +45,14 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)>
             total_weight += weight;
             if(parent[current_node] != -1)                                                      // |------>Remember to implement it
                 v.push_back(full_edge<N,E> { node[current_node], node[parent[current_node]], get_edge[{ current_node, parent[current_node] }] } );
-            for (auto &[adjacent_node,edge]:adj[i])
+            for (auto &[ adjacent_node, edge ]: adj[ current_node ])
             {
                 if(in_mst[adjacent_node] == false)
                 {
-                    if(auto new_weight = get_weight(edge); dis[adjacent_node] > new_weight)
+                    if(auto new_weight = get_weight(edge); distance[adjacent_node] > new_weight)
                     {
-                        dis[ adjacent_node ] = new_weight;
-                        parent[ adjacent_node ] = i;
+                        distance[ adjacent_node ] = new_weight;
+                        parent[ adjacent_node ] = current_node;
                         pq.push({ new_weight , adjacent_node});
                     }
                 }
@@ -88,7 +88,7 @@ auto Undirected_Graph<N, E>::krushkal_minimum_spanning_tree(std::function<T(E)> 
         std :: abort();
     }
 
-    using type = typename get_type<std::is_integral<T>::value>::type; //find which type of variable to use
+    using type = typename get_data_type<std::is_integral<T>::value>::type; //find which type of variable to use
 
 
     type total_weight = 0;
