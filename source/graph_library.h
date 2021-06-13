@@ -67,6 +67,7 @@ protected:
     int n = 0, e = 0;
     std::map<std::pair<int,int>, E> get_edge;   
     std::vector<std::vector<std::pair<int, E> > > adj;
+    bool is_weighted, is_directed;  //will get value from main graph class from template arguments
 public:
     size_t count_node();
     size_t count_edge();
@@ -90,12 +91,15 @@ template<typename N, typename E>
 class Directed_Graph :
     public virtual Base<N, E>
 {
-    public:
+    protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
         using Base<N, E> :: n;
         using Base<N, E> :: e;
         using Base<N, E> :: adj;
+
+    public:
+        
         
 
         bool is_dag();
@@ -118,21 +122,22 @@ class disjoint_set_union    //required for krushkal algorithm
 template<typename N, typename E>
 class Undirected_Graph:
     public virtual Base<N, E>
-{     
-    public:
+{   
+     protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
         using Base<N, E> :: n;
         using Base<N, E> :: e;
         using Base<N, E> :: adj;
-
+      
+    public:
         /*
             For more on how to return different types based on tepmplate read at
             https://stackoverflow.com/questions/48199813/how-to-use-condition-to-check-if-typename-t-is-integer-type-of-float-type-in-c
             https://stackoverflow.com/questions/44864576/returning-different-type-from-a-function-template-depending-on-a-condition
         */
         template<typename T>
-            auto  prims_minimum_spanning_tree(std::function <T(E)>);
+            auto  prims_minimum_spanning_tree(std::function <T(E)>);    //both algorithms works fine with negative edge weights also
         template<typename T>
             auto krushkal_minimum_spanning_tree(std::function <T(E)>);
 };
@@ -142,7 +147,7 @@ template<typename N,typename E> //see about how to implement only typename N in 
 class Unweighted_Graph:
     public virtual Base<N, E>
 {
-    public:
+     protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
         using Base<N, E> :: n;
@@ -150,6 +155,8 @@ class Unweighted_Graph:
         using Base<N, E> :: adj;
 
 
+    public:
+        
         void add_edge(N&, N&);
 
         std::vector <traversal<N,int> > single_source_shortest_path(N&);
@@ -165,7 +172,7 @@ class Weighted_Graph:
             auto dijkstra(int, std::function< T (E)> );   //total 2 types of each for float and int
         template<typename T>
             auto bellman_ford(int, std::function< T (E)> );
-    public:
+    protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
         using Base<N, E> :: n;
@@ -173,6 +180,8 @@ class Weighted_Graph:
         using Base<N, E> :: adj;
 
 
+    public:
+        
         void add_edge(N&, N&, E&);   //distinction of function so no abuse of both add edge methods
         
         
@@ -205,9 +214,8 @@ struct full_edge
     E edge;
 };
 
-
-
 template<bool is_integral> struct get_data_type; //for getting which data type to be used for calculations in edge weights
+
 
 
 
@@ -218,7 +226,7 @@ template<bool is_integral> struct get_data_type; //for getting which data type t
 #include "Directed_Graph.inc"
 #include "disjoint_set_union.inc"
 #include "get_data_type.inc"
-#include "Undireced_Graph_krushkal.inc"
+#include "Undirected_Graph.inc"
 
 
 #endif
