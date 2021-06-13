@@ -14,7 +14,7 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)>
             Read more at https://stackoverflow.com/questions/57908992/better-alternatives-to-assertfalse-in-c-c
         */
         //assert(false)
-        std :: cout<< "You did not pass a valid function in Prims Minimum Spanning Tree" << std :: endl;
+        std :: cout<< "You did not pass a valid function in Prims Minimum Spanning Tree. Please provide a valid function." << std :: endl;
         std :: cout<< "Now the program will abort" <<std :: endl;
         std :: abort();
     }
