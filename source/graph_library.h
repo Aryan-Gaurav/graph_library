@@ -87,6 +87,13 @@ public:
     size_t count_edge();
     void add_node( N& );
     void add_node( std::vector<N>& );
+    /*
+        This 1 has been added to ensure that in case of unweighted graph and user tries to insert using (N&, N&) it works.
+        Remember that it works only when user donot specify a specific data type for Edges.
+    */
+    void add_edge(N&, N&, E = 1 );
+    // void remove_node(N&);
+    // void remove_edge(N&, N&);
     std::vector<traversal<N,int32_t> > bfs(N&, int depth = INT32_MAX);
     std::vector<traversal<N,int32_t> > dfs(N&, int depth = INT32_MAX);
     /*
@@ -224,13 +231,7 @@ class graph:
     public:
         graph(int); //Remember to update the superclass base variables
         graph();
-        /*
-        This 1 has been added to ensure that in case of unweighted graph and user tries to insert using (N&, N&) it works.
-        Remember that it works only when user donot specify a specific data type for Edges.
-        */
-        void add_edge(N&, N&, E = 1 );
-        // void remove_node(N&);
-        // void remove_edge(N&, N&);
+        
 };
 
 template<typename N,typename E>
