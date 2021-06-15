@@ -1,7 +1,7 @@
+#include <vector>
 
 
 //Function definations of Directed_Graph
-
 
 template<typename N, typename E>
 bool Directed_Graph<N, E> ::is_dag()    //TODO same implementation using stack i.e. without the recursive function
@@ -126,10 +126,116 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
 
 
 template<typename N, typename E>
-std::vector<std::vector<N> >  Directed_Graph<N, E> ::scc() //TODO with Gobow Algorithm
+std::vector<std::vector<N> >  Directed_Graph<N, E> ::scc() //TODO with Gobow Algorithm 
 {
-    //Kosaraju algorithm
-    // std::stack<int> stk;
-    // bool vis[n] = { 0 };
-    return {};
+    //To read more about this Gabow algo go to :- https://www.cs.princeton.edu/courses/archive/spr09/cos423/Lectures/bi-gabow.pdf
+    /*
+        First write the recursive version of Gobow as it is easy to write.
+        But if the DFS goes too deep it can cause STACKOVERFLOW so implement it iteratively.
+        Remember before implementing iterative version, write the recursive version and then transform it
+    */
+
+   /*
+
+        RECURSIVE IMPLEMENTATION
+
+        vector<vector<int>> scc;
+        void dfs(int v)
+        {
+            visit part
+        	index [v] = stk.size();		
+        	stk.push(v);	//current path stack
+        	boundaries.push(index[v]);	//stack to store boundaries
+            edge_visit part
+        	for(auto [w,ed]:adj[x])
+        	{
+        		if(index[w] == -1)	//intialise each index as -1 as 0 can't be used
+        		{
+        			dfs(w);
+        		}
+        		else if(identified.count(w) == 0)
+        		{
+        			while(index[w] < boundaries.top())
+        				boundaries.pop();
+        		}
+        	}
+            post_visit_part
+        	if(boundaries.top() == index[v])
+        	{
+        		boundaries.pop();
+        		vector<int> temp;
+        		while(stk.size() > index[v])
+        		{
+        			auto t = stk.top();
+        			stk.pop();
+        			temp.push_back(t);
+        			identified.insert(t); // a set to identify if vertex is identified or not
+        		}
+        		scc.push_back(temp);
+        	}
+        }
+
+        */
+
+    std::stack<int> stk, boundaries;
+    std::vector<int> index(n, -1); //intialise all to 0 in paper but here indexing starts from 0 so put -1
+    bool is_identified[n] = { 0 }; //for checking if current node is included in any Strongly Connected Component (SCC)
+	std::vector<std::vector<N> > scc;
+
+	for (int i = 0 ; i < n ; i++)
+	{
+		if (index[i] == -1)
+		{
+			std::stack< pair<int, string> > recursion_stack; //for simulating the dfs function in paper iteratively
+			recursion_stack.push({ i, "VISIT" });
+			while ( recursion_stack.empty() == false )
+			{
+				auto [v, op] = recursion_stack.top();
+				recursion_stack.pop();
+                if (op == "VISIT")
+                {
+                    index[v] = stk.size();
+                    stk.push(v);
+                    boundaries.push(index[v]);
+                    recursion_stack.push({v, "POST_VISIT"});
+                    for (auto [w, ed] : adj[v])
+                    {
+                        recursion_stack.push({w, "EDGE_VISIT"});
+                    }
+                }
+                else if (op == "EDGE_VISIT")
+                {
+                    if (index[v] == -1)
+                    {
+                        recursion_stack.push({v, "VISIT"});
+                    }
+                    else if (is_identified[v] == false)
+                    {
+                        while (index[v] < boundaries.top())
+                        {
+                            boundaries.pop();
+                        }
+                    }
+                }
+                else
+                {
+                    if (boundaries.top() == index[v])
+                    {
+                        boundaries.pop();
+                        std::vector<N> temp;
+                        while (stk.size() > index[v])
+                        {
+                            int t = stk.top();
+                            stk.pop();
+                            temp.push_back(node[t]);
+                            is_identified[t] = true; // a set to identify if vertex is identified or not
+                        }
+                        scc.push_back(temp);
+                    }
+                }
+            }
+		}
+	}
+
+	return scc;
 }

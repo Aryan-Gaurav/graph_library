@@ -43,8 +43,8 @@ struct traversal
     N node, parent;
     T distance;
     traversal();
+    traversal(N, N, T);
     void set_value(N, N, T);
-    void print();
 };
 
 template<typename N, typename T>

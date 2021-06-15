@@ -71,7 +71,7 @@ std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
     int dis[n];
     std::queue<int> que;
     std::vector<traversal<N, int>> ans;
-    ans.push_back(traversal<N, int>{source_node, source_node, 0});
+    ans.push_back(traversal<N, int>(source_node, source_node, 0));
     que.push(src);
     vis[src] = 1;
     dis[src] = 0;
@@ -85,7 +85,7 @@ std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
             {
                 vis[x] = 1;
                 dis[x] = dis[t] + 1;
-                ans.push_back(traversal<N, int>{node[x], node[t], dis[x]});
+                ans.push_back(traversal<N, int>(node[x], node[t], dis[x]));
                 que.push(x);
             }
         }
@@ -103,7 +103,7 @@ std::vector<traversal<N, int>> Base<N, E>::dfs(N &source_node, int depth)
     int dis[n];
     std::stack<int> stk;
     std::vector<traversal<N, int>> ans;
-    ans.push_back(traversal<N, int>{source_node, source_node, 0});
+    ans.push_back(traversal<N, int>(source_node, source_node, 0));
     stk.push(src);
     vis[src] = 1;
     dis[src] = 0;
@@ -117,7 +117,7 @@ std::vector<traversal<N, int>> Base<N, E>::dfs(N &source_node, int depth)
             {
                 vis[x] = 1;
                 dis[x] = dis[t] + 1;
-                ans.push_back(traversal<N, int>{node[x], node[t], dis[x]});
+                ans.push_back(traversal<N, int>(node[x], node[t], dis[x]));
                 stk.push(x);
             }
         }

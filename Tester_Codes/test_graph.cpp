@@ -6,7 +6,12 @@
 void test_case_1()
 {
     graph G(5);
-    std::vector<int> v(5,-1);
+    std::vector<int> v(5);
+
+    for(size_t i = 0; i<5; i++)
+    {
+        v[i] = i;
+    }
     
     assert(G.count_edge() == 0);
     assert(G.count_node() == 0);
@@ -28,6 +33,26 @@ void test_case_1()
     }
 
     assert( G.count_edge() == 4);
+
+    auto bfs_res = G.bfs(v[0]);
+
+    for(auto &x: bfs_res)
+    {
+        assert(x.parent == 0);
+    }
+
+    auto dfs_res = G.dfs(v[1]);
+
+    dfs_res = G.dfs(v[0]);
+
+    for(auto &x: dfs_res)
+    {
+        assert(x.parent == 0);
+    }
+
+    // std::cout<< G.is_dag() << std::endl; //throws an error
+
+    
 }
 
 void run_test()
