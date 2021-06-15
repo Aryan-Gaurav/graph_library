@@ -9,7 +9,7 @@ traversal<N, T> :: traversal()
 }
 
 template<typename N, typename T>
-void traversal<N, T> :: set_value(N a, N b, T dis)
+traversal<N, T> :: traversal(N a, N b, T dis)
 {
     node = a;
     parent = b;
@@ -17,10 +17,10 @@ void traversal<N, T> :: set_value(N a, N b, T dis)
 }
 
 template<typename N, typename T>
-void traversal<N, T> :: print()
+void traversal<N, T> :: set_value(N a, N b, T dis)
 {
-    node.print();
-    std::cout << "<--";
-    parent.print();
-    std::cout << distance << std::endl;
+    node = a;
+    parent = b;
+    distance = dis;
 }
+
