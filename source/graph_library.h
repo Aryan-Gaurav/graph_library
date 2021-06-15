@@ -210,6 +210,9 @@ class graph:
     public virtual std::conditional<is_directed, Directed_Graph<N,E>, Undirected_Graph<N,E> >::type,
     public virtual std::conditional<is_weighted, Weighted_Graph<N,E>, Unweighted_Graph<N,E> >::type
 {
+    private:
+        //int unit_weight = 1; //for default argument in add_edge function
+
     protected:
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
@@ -225,7 +228,7 @@ class graph:
         This 1 has been added to ensure that in case of unweighted graph and user tries to insert using (N&, N&) it works.
         Remember that it works only when user donot specify a specific data type for Edges.
         */
-        void add_edge(N&,N&,E& = 1);
+        void add_edge(N&, N&, E = 1 );
         // void remove_node(N&);
         // void remove_edge(N&, N&);
 };

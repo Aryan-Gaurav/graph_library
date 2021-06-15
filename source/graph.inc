@@ -3,11 +3,12 @@
 template<class N, bool is_directed, bool is_weighted , class E > 
 graph<N, is_directed, is_weighted, E>::graph(int size)
 {
-    n = size;
-    adj.resize( n );
+    n = 0;
+     e = 0;
+    adj.resize( size );
     Base<N,E> :: is_directed = is_directed;
     Base<N,E> :: is_weighted = is_weighted;
-    e = 0;
+   
 }
 
 template<class N , bool is_directed , bool is_weighted, class E > 
@@ -20,7 +21,7 @@ graph<N, is_directed, is_weighted, E>::graph()
 }
 
 template<class N, bool is_directed, bool is_weighted, class E> 
-void graph<N, is_directed, is_weighted, E> :: add_edge(N &u, N &v, E &ed)
+void graph<N, is_directed, is_weighted, E> :: add_edge(N &u, N &v, E ed)
 {
     if(idx.ispresent(u) == false || idx.ispresent(v) == false) //trying to add an edge whose node is not in Graph
     {
