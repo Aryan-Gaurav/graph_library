@@ -1,12 +1,12 @@
 #include <queue>
 #include <array>
+#include <cstring>
 #include <type_traits> //for using std::is_integral<T>::value
 
 template<class N, class E> 
 template<class T> 
-auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)> get_weight)
+auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (const std::function<T (E)> &get_weight)
 {
-
     if(std::is_integral<T>::value == false && std::is_floating_point<T>::value == false) //this means the return type is neither integral nor floating point
     {
         /*
@@ -69,7 +69,7 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (std::function<T (E)>
 
 template <typename N, typename E>
 template <typename T>
-auto Undirected_Graph<N, E>::krushkal_minimum_spanning_tree(std::function<T(E)> get_weight)
+auto Undirected_Graph<N, E>::krushkal_minimum_spanning_tree(const std::function<T(E)> &get_weight)
 {
     /*
         Read more about is_integral<T>::value and is_integral_v<T> at

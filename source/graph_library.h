@@ -47,6 +47,7 @@ struct traversal
     void set_value(N, N, T);
 };
 
+
 template<typename N, typename T>
 struct node_pair
 {
@@ -150,9 +151,9 @@ class Undirected_Graph:
             https://stackoverflow.com/questions/44864576/returning-different-type-from-a-function-template-depending-on-a-condition
         */
         template<typename T>
-            auto  prims_minimum_spanning_tree(std::function <T(E)>);    //both algorithms works fine with negative edge weights also
+            auto  prims_minimum_spanning_tree(const std::function <T(E)>&);    //both algorithms works fine with negative edge weights also
         template<typename T>
-            auto krushkal_minimum_spanning_tree(std::function <T(E)>);
+            auto krushkal_minimum_spanning_tree(const std::function <T(E)>&);
 };
 
 
