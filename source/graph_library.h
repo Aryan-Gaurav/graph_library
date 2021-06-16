@@ -121,7 +121,7 @@ class Directed_Graph :
 
     public:
         
-
+        // bool detect_cycle(int, int, std::vector<bool>, std::vector<int>, std::vector<int>);  //some error check once
         bool is_dag();
         std::vector<std::vector<N> > scc();
         std::vector<N> topo_sort();
@@ -217,9 +217,6 @@ class graph:
     public virtual std::conditional<is_directed, Directed_Graph<N,E>, Undirected_Graph<N,E> >::type,
     public virtual std::conditional<is_weighted, Weighted_Graph<N,E>, Unweighted_Graph<N,E> >::type
 {
-    private:
-        //int unit_weight = 1; //for default argument in add_edge function
-
     protected:
         using Base<N, E> :: idx;
         using Base<N, E> :: node;

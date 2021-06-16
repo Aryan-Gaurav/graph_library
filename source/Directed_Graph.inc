@@ -1,18 +1,42 @@
 #include <vector>
+#include <utility>
+#include <algorithm>
+#include <string>
+#include <stack>
 
 
 //Function definations of Directed_Graph
 
+// template<typename N, typename E>
+// bool detect_cycle(int &src, int &current_time, std::vector<bool> &vis, std::vector<int> &in_time, std::vector<int> &out_time )
+// {
+//     current_time += 1;
+//     in_time[src] = current_time;
+//     vis[src] = 1; //color the node as gray
+    
+//     for (auto& [x, y] : Base<N,E> :: adj[src])
+//     {
+//         if (vis[x] == 0)
+//         {
+//             if(detect_cycle(x, current_time , vis, in_time, out_time) == true)
+//             {
+//                 return true;
+//             }
+//         }
+//         else if (vis[x] == 1)
+//         {
+//             return true;
+//         }
+//     }
+//     current_time += 1;
+//     out_time[src] = current_time;
+//     vis[src] = 2;   //color the node as black
+//     return false;
+// }
+
 template<typename N, typename E>
-bool Directed_Graph<N, E> ::is_dag()    //TODO same implementation using stack i.e. without the recursive function
+bool Directed_Graph<N, E>::is_dag()   //TODO same implementation using stack i.e. without the recursive function
 {
-    //temprorary soution
-    // auto n = Base<N,E> :: n;
-    // auto adj = Base<N,E> ::adj;
-
-
-    int vis[n] = { 0 };
-
 
     /*
         Recursive lambdas are not possible without removing auto with std::function
@@ -20,84 +44,155 @@ bool Directed_Graph<N, E> ::is_dag()    //TODO same implementation using stack i
         https://stackoverflow.com/questions/2067988/recursive-lambda-functions-in-c11
     */
 
-    auto detect = [&](int y)->bool
-    {
-        auto lambda = [&](int src, const auto& func)->bool
-        {
-            vis[src] = 1; //color the node as gray
-            bool isok = true;
+    // auto detect = [&](int y) -> bool
+    // {
+    //     auto lambda = [&](int src, const auto& func) -> bool
+    //     {
+    //         vis[src] = 1; //color the node as gray
+    //         bool isok = true;
 
-            for (auto& [x, y] : adj[src])
-            {
-                if (vis[x] == 0)
-                {
-                    isok = isok && func(x, func);
-                }
-                else if (vis[x] == 1)
-                {
-                    return false;
-                }
-            }
-            vis[src] = 2;   //color the node as black
-            return isok;
-        };
-        return lambda(y, lambda);
-    };
+    //         for (auto& [x, y] : adj[src])
+    //         {
+    //             if (vis[x] == 0)
+    //             {
+    //                 isok = isok && func(x, func);
+    //             }
+    //             else if (vis[x] == 1)
+    //             {
+    //                 return false;
+    //             }
+    //         }
+    //         vis[src] = 2;   //color the node as black
+    //         return isok;
+    //     };
+    //     return lambda(y, lambda);
+    // };
 
+
+    std::vector<int> current_state(n,0); //0  for white, 1 for gray and 2 for black nodes. See Cormen for more details
+    std::vector<int> in_time(n),out_time(n);
+    int current_time = 0;
     
     for (size_t i = 0; i < n; i++)
     {
-        if (vis[i] == 0)
+        if (current_state[i] == 0)
         {
-            if (detect(i) == false)
-                return true;
+            std::stack<std::pair<int,std::string> > recursion_stack;
+            recursion_stack.push({i,"BEFORE_EXPLORE"});
+            while ( recursion_stack.empty() == false )
+            {
+                auto [v,op] = recursion_stack.top();
+                recursion_stack.pop();
+                if (op == "BEFORE_EXPLORE")
+                {
+                    current_state[v] = 1; 
+                    recursion_stack.push({v, "AFTER_EXPLORE" });
+                    for(auto &[w,ed] : adj[v])
+                    {
+                        if(current_state[w] == 0)
+                        {
+                            recursion_stack.push({w, "BEFORE_EXPLORE"});
+                        }
+                        else if(current_state[w] == 1) //this node is being explored and again encountered, so cycle
+                        {
+                            return false;
+                        }
+                        else    // current_state = 2, ie black and already finished exploration
+                        {
+                            continue;
+                        }
+                    }
+                }
+                else if (op == "AFTER_EXPLORE")
+                {
+                    current_state[v] = 2;
+                }
+            }
         }
     }
-    return false;
+    return true;
 }
 
 
 template<typename N, typename E>
 std::vector<N> Directed_Graph<N, E> ::topo_sort()
 {
-    bool vis[n] = { 0 };
+    // bool vis[n] = { 0 };
+    // 
+    // auto detect = [&](int y)->bool              //One possible improvement is to replace these lambda functions by a private function in the class itself
+    // {
+    //     auto lambda = [&](int src, const auto& func)->bool
+    //     {
+    //         current_time += 1;
+    //         in_time[src] = current_time;
+    //         vis[src] = 1; //color the node as gray
+    //         bool isok = true;
+
+    //         for (auto& [x, y] : adj[src])
+    //         {
+    //             if (vis[x] == 0)
+    //             {
+    //                 isok = isok && func(x, func);
+    //             }
+    //             else if (vis[x] == 1)
+    //             {
+    //                 return false;
+    //             }
+    //         }
+    //         current_time += 1;
+    //         out_time[src] = current_time;
+    //         vis[src] = 2;   //color the node as black
+    //         return isok;
+    //     };
+    //     return lambda(y, lambda);
+    // };
+
     int current_time = 0;
     int in_time[n], out_time[n];
-    auto detect = [&](int y)->bool              //One possible improvement is to replace these lambda functions by a private function in the class itself
-    {
-        auto lambda = [&](int src, const auto& func)->bool
-        {
-            current_time += 1;
-            in_time[src] = current_time;
-            vis[src] = 1; //color the node as gray
-            bool isok = true;
-
-            for (auto& [x, y] : adj[src])
-            {
-                if (vis[x] == 0)
-                {
-                    isok = isok && func(x, func);
-                }
-                else if (vis[x] == 1)
-                {
-                    return false;
-                }
-            }
-            current_time += 1;
-            out_time[src] = current_time;
-            vis[src] = 2;   //color the node as black
-            return isok;
-        };
-        return lambda(y, lambda);
-    };
+    int current_state[n] = { 0 };
 
     for (size_t i = 0; i < n; i++)
     {
-        if (vis[i] == 0)
+        if (current_state[i] == 0)
         {
-            if (detect(i) == false)
+            std::stack<std::pair<int,std::string> > recursion_stack;
+
+            recursion_stack.push({i,"BEFORE_EXPLORE"});
+
+
+            while ( recursion_stack.empty() == false )
             {
-                return {};
+                auto [v,operation] = recursion_stack.top();
+                recursion_stack.pop();
+                if (operation == "BEFORE_EXPLORE")
+                {
+                    current_time += 1;
+                    in_time[v] = current_time;
+                    current_state[v] = 1; 
+
+                    recursion_stack.push({v, "AFTER_EXPLORE" });
+                    for(auto &[w,ed] : adj[v])
+                    {
+                        if(current_state[w] == 0)
+                        {
+                            recursion_stack.push({w, "BEFORE_EXPLORE"});
+                        }
+                        else if(current_state[w] == 1) //this node is being explored and again encountered, so cycle
+                        {
+                            return {}; //return empty vector denoting no topological sort is possible
+                        }
+                        else    // current_state = 2, ie black and already finished exploration
+                        {
+                            continue;
+                        }
+                    }
+                }
+                else if (operation == "AFTER_EXPLORE")
+                {
+                    current_time += 1;
+                    out_time[v] = current_time;
+                    current_state[v] = 2;
+                }
             }
         }
     }
@@ -186,7 +281,7 @@ std::vector<std::vector<N> >  Directed_Graph<N, E> ::scc() //TODO with Gobow Alg
 	{
 		if (index[i] == -1)
 		{
-			std::stack< pair<int, string> > recursion_stack; //for simulating the dfs function in paper iteratively
+			std::stack< std::pair<int, std::string> > recursion_stack; //for simulating the dfs function in paper, iteratively
 			recursion_stack.push({ i, "VISIT" });
 			while ( recursion_stack.empty() == false )
 			{
