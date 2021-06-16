@@ -70,40 +70,42 @@ bool Directed_Graph<N, E>::is_dag()   //TODO same implementation using stack i.e
 
 
     std::vector<int> current_state(n,0); //0  for white, 1 for gray and 2 for black nodes. See Cormen for more details
-    std::vector<int> in_time(n),out_time(n);
-    int current_time = 0;
     
     for (size_t i = 0; i < n; i++)
     {
         if (current_state[i] == 0)
         {
             std::stack<std::pair<int,std::string> > recursion_stack;
-            recursion_stack.push({i,"BEFORE_EXPLORE"});
+            recursion_stack.push({i,"START_EXPLORE"});
             while ( recursion_stack.empty() == false )
             {
-                auto [v,op] = recursion_stack.top();
+                auto [v,operation] = recursion_stack.top();
                 recursion_stack.pop();
-                if (op == "BEFORE_EXPLORE")
+                if (operation == "START_EXPLORE")
                 {
                     current_state[v] = 1; 
                     recursion_stack.push({v, "AFTER_EXPLORE" });
                     for(auto &[w,ed] : adj[v])
                     {
-                        if(current_state[w] == 0)
-                        {
-                            recursion_stack.push({w, "BEFORE_EXPLORE"});
-                        }
-                        else if(current_state[w] == 1) //this node is being explored and again encountered, so cycle
-                        {
-                            return false;
-                        }
-                        else    // current_state = 2, ie black and already finished exploration
-                        {
-                            continue;
-                        }
+                        recursion_stack.push({w, "EDGE_VISIT"});
                     }
                 }
-                else if (op == "AFTER_EXPLORE")
+                else if(operation == "EDGE_VISIT")
+                {
+                    if(current_state[v] == 0)
+                    {
+                        recursion_stack.push({v, "START_EXPLORE"});
+                    }
+                    else if(current_state[v] == 1) //this node is being explored and again encountered, so cycle
+                    {
+                        return false; //return empty vector denoting no topological sort is possible
+                    }
+                    else    // current_state = 2, ie black and already finished exploration
+                    {
+                        continue;
+                    }
+                }
+                else if (operation == "AFTER_EXPLORE")
                 {
                     current_state[v] = 2;
                 }
@@ -157,14 +159,14 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
         {
             std::stack<std::pair<int,std::string> > recursion_stack;
 
-            recursion_stack.push({i,"BEFORE_EXPLORE"});
+            recursion_stack.push({i,"START_EXPLORE"});
 
 
             while ( recursion_stack.empty() == false )
             {
                 auto [v,operation] = recursion_stack.top();
                 recursion_stack.pop();
-                if (operation == "BEFORE_EXPLORE")
+                if (operation == "START_EXPLORE")
                 {
                     current_time += 1;
                     in_time[v] = current_time;
@@ -173,18 +175,22 @@ std::vector<N> Directed_Graph<N, E> ::topo_sort()
                     recursion_stack.push({v, "AFTER_EXPLORE" });
                     for(auto &[w,ed] : adj[v])
                     {
-                        if(current_state[w] == 0)
-                        {
-                            recursion_stack.push({w, "BEFORE_EXPLORE"});
-                        }
-                        else if(current_state[w] == 1) //this node is being explored and again encountered, so cycle
-                        {
-                            return {}; //return empty vector denoting no topological sort is possible
-                        }
-                        else    // current_state = 2, ie black and already finished exploration
-                        {
-                            continue;
-                        }
+                        recursion_stack.push({w, "EDGE_VISIT"});
+                    }
+                }
+                else if(operation == "EDGE_VISIT")
+                {
+                    if(current_state[v] == 0)
+                    {
+                        recursion_stack.push({v, "START_EXPLORE"});
+                    }
+                    else if(current_state[v] == 1) //this node is being explored and again encountered, so cycle
+                    {
+                        return {}; //return empty vector denoting no topological sort is possible
+                    }
+                    else    // current_state = 2, ie black and already finished exploration
+                    {
+                        continue;
                     }
                 }
                 else if (operation == "AFTER_EXPLORE")
