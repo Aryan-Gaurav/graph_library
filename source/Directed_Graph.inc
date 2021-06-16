@@ -75,7 +75,13 @@ bool Directed_Graph<N, E>::is_dag()   //TODO same implementation using stack i.e
     {
         if (current_state[i] == 0)
         {
-            std::stack<std::pair<int,std::string> > recursion_stack;
+            /*
+            Remember always, during iterative implementation to simulate the recursive function see how the flow goes from one part to another,
+            wherever flow goes into a recursive function, save that state in stack and whenever it comes back save that state 
+            in stack to evaluate further.
+
+            */
+            std::stack<std::pair<int,std::string> > recursion_stack; 
             recursion_stack.push({i,"START_EXPLORE"});
             while ( recursion_stack.empty() == false )
             {
