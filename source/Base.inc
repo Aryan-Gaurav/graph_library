@@ -64,13 +64,13 @@ void Base<N,E> :: add_edge(N &u, N &v, E ed)
 //Implementation of Breadth First Search
 
 template <typename N, typename E>
-std::vector<traversal<N, int>> Base<N, E>::bfs(int src, int depth)
+std::vector<traversal<N, int>> Base<N, E> :: breadth_first_search_by_index(int src, bool is_for_sssp, int depth)
 {
     bool vis[n] = {0};
     int dis[n];
     std::queue<int> que;
     std::vector<traversal<N, int>> ans;
-    ans.push_back(traversal<N, int>(source_node, source_node, 0));
+    ans.push_back(traversal<N, int>(node[src], node[src], 0));
     que.push(src);
     vis[src] = 1;
     dis[src] = 0;
@@ -89,11 +89,14 @@ std::vector<traversal<N, int>> Base<N, E>::bfs(int src, int depth)
             }
         }
     }
-    for (size_t i = 0; i < n; i++)
+    if (is_for_sssp == true) //if this is called for Single Source Shortest Path, then add other nodes which are unreachable 
     {
-        if (vis[i] == false)
+        for (size_t i = 0; i < n; i++)
         {
-            ans.push_back(traversal<N, int>(node[i], node[i], 2e9));
+            if (vis[i] == false)
+            {
+                ans.push_back(traversal<N, int>(node[i], node[i], 2e9));
+            }
         }
     }
     return ans;
@@ -103,7 +106,7 @@ template <typename N, typename E>
 std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
 {
    int src = idx[source_node];
-   return bfs(src,depth);
+   return bfs(src, false, depth);
 }
 
 //Implementation of Depth First Search

@@ -4,22 +4,22 @@
 
 // Function definations for Unweighted Graphs
 
-template<class N, class E> 
-std::vector<traversal<N, int> > Unweighted_Graph<N, E>::single_source_shortest_path(N &source_node)
+template <class N, class E>
+std::vector<traversal<N, int>> Unweighted_Graph<N, E>::single_source_shortest_path(N &source_node)
 {
     return bfs(source_node);
 }
 
-template<class N, class E> 
-std::vector <node_pair<N,int> > Unweighted_Graph<N, E>::all_pair_shortest_path()
+template <class N, class E>
+std::vector<node_pair<N, int>> Unweighted_Graph<N, E>::all_pair_shortest_path()
 {
-    vector<node_pair<N,int>> ans;
-    for(size_t i=0;i<n;i++)
+    std::vector<node_pair<N, int>> ans;
+    for (size_t i = 0; i < n; i++)
     {
-        auto temp = bfs(i);
-        for(auto &x:temp)
+        auto temp = Base<N,E>::breadth_first_search_by_index(i, true); //protected member of superclass so acess by scope resolution
+        for (auto &x : temp)
         {
-            ans.push_back(node_pair<N,int> {node[i],x.node,x.distance});
+            ans.push_back(node_pair<N, int>{node[i], x.node, x.distance});
         }
     }
     return ans;

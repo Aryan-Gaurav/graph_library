@@ -57,6 +57,15 @@ struct node_pair
         void set_value(N, N, T);
 };
 
+
+template<typename N,typename E>
+struct full_edge
+{
+    N u,v;
+    E edge;
+};
+
+
 template<typename N, typename E>
 class Base
 {
@@ -82,6 +91,7 @@ protected:
     std::map<std::pair<int,int>, E> get_edge;   
     std::vector<std::vector<std::pair<int, E> > > adj;
     bool is_weighted, is_directed;  //will get value from main graph class from template arguments
+    std::vector<traversal<N,int32_t> > breadth_first_search_by_index(int, bool is_for_sssp, int depth = INT32_MAX);
 public:
     size_t count_node();
     size_t count_edge();
@@ -97,7 +107,7 @@ public:
     std::vector<traversal<N,int32_t> > bfs(N&, int depth = INT32_MAX);
     std::vector<traversal<N,int32_t> > dfs(N&, int depth = INT32_MAX);
     /*
-        Read more about default arguments in fucntions
+        Read more about default arguments in functions
         https://stackoverflow.com/questions/32105975/why-cant-i-have-template-and-default-arguments
     */
 };
@@ -161,6 +171,7 @@ class Unweighted_Graph:
     public virtual Base<N, E>
 {
      protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
+        
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
         using Base<N, E> :: n;
@@ -171,8 +182,6 @@ class Unweighted_Graph:
         using Base<N, E> :: is_directed;
 
     public:
-        
-        // void add_edge(N&, N&);
 
         std::vector <traversal<N,int> > single_source_shortest_path(N&);
         std::vector <node_pair<N,int> > all_pair_shortest_path();
@@ -231,12 +240,6 @@ class graph:
         
 };
 
-template<typename N,typename E>
-struct full_edge
-{
-    N u,v;
-    E edge;
-};
 
 
 
@@ -252,6 +255,7 @@ struct full_edge
 #include "Base.inc"
 #include "Directed_Graph.inc"
 #include "Undirected_Graph.inc"
+#include "Unweighted_Graph.inc"
 #include "Weighted_Graph.inc"
 #include "graph.inc"
 

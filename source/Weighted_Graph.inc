@@ -33,7 +33,7 @@ auto Weighted_Graph<N, E>::dijkstra(int source_node, const std::function <T(E)> 
         {
             is_visited[current_node] = true;
             distance[current_node] = current_distance;
-            for (auto [adjacent_node, edge] : adj[current_node])
+            for (auto &[adjacent_node, edge] : adj[current_node])
             {
                 if (is_visited[adjacent_node] == false)
                 {
@@ -82,7 +82,7 @@ auto Weighted_Graph<N, E>::shortest_path_faster_algorithm(int source_node, bool 
     std::vector<int> parent(n, -1), number_of_relaxation(n, 0);
     std::vector<type> distance(n, INF);
     bool inqueue[n] = {false};
-    queue<int> Queue;
+    std::queue<int> Queue;
 
     Queue.push(source_node);
     distance[source_node] = 0;
@@ -206,7 +206,7 @@ auto Weighted_Graph<N, E>::all_pair_shortest_path(const std::function<T(E)> &fun
         {
             if (i == j)
             {
-                dis[i][j] = 0;
+                dis[i][i] = 0;
             }
             else
             {

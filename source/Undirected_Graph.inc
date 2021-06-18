@@ -31,14 +31,14 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (const std::function<
 
     std::priority_queue<std::pair<type, int> ,
                         std::vector<std::pair<type, int> > ,
-                        std::greater<std::pair<type, int> > > pq;
+                        std::greater<std::pair<type, int> > > min_heap;
 
-    pq.push({ 0, 0 });
+    min_heap.push({ 0, 0 });
     distance[0] = 0;
-    while ( pq.empty() == false)
+    while ( min_heap.empty() == false)
     {
-        auto [weight, current_node] = pq.top();
-        pq.pop();
+        auto [weight, current_node] = min_heap.top();
+        min_heap.pop();
         if(in_mst[current_node] == false)
         {
             in_mst [ current_node ] = true;
@@ -51,9 +51,9 @@ auto Undirected_Graph<N, E> :: prims_minimum_spanning_tree (const std::function<
                 {
                     if(auto new_weight = get_weight(edge); distance[adjacent_node] > new_weight)
                     {
-                        distance[ adjacent_node ] = new_weight;
-                        parent[ adjacent_node ] = current_node;
-                        pq.push({ new_weight , adjacent_node});
+                        distance[adjacent_node] = new_weight;
+                        parent[adjacent_node] = current_node;
+                        min_heap.push({new_weight, adjacent_node});
                     }
                 }
             }
@@ -96,22 +96,22 @@ auto Undirected_Graph<N, E>::krushkal_minimum_spanning_tree(const std::function<
 
     std::priority_queue<std::pair<type, std::array<int, 2> > ,
                         std::vector<std::pair<type, std::array<int, 2> > > ,
-                        std::greater<std::pair<type, std::array<int, 2> > > > pq; //declare a min priority queue
+                        std::greater<std::pair<type, std::array<int, 2> > > > min_heap; //declare a min priority queue
 
     for (size_t i = 0; i < n; i++)
     {
         for(auto &[x,y]:adj[i])
         {
-            pq.push({ get_weight(y), { x, i } });
+            min_heap.push({ get_weight(y), { x, i } });
         }
     }
 
     disjoint_set_union DSU(n);
 
-    while ( pq.empty() == false)
+    while (min_heap.empty() == false)
     {
-        auto [weight_of_edge, index_of_nodes] = pq.top();
-        pq.pop();
+        auto [weight_of_edge, index_of_nodes] = min_heap.top();
+        min_heap.pop();
         if(DSU.is_same(index_of_nodes[0], index_of_nodes[1]) == false)
         {
             DSU.do_union(index_of_nodes[0], index_of_nodes[1]);
