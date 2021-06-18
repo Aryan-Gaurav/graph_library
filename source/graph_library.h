@@ -216,7 +216,7 @@ class Weighted_Graph:
         template<typename T>
             auto all_pair_shortest_path( const std::function <T(E)>& );
         template<typename T>
-            bool is_negative_cycle( const std::function <T(E)>& );
+            bool is_negative_weight_cycle( N&, const std::function <T(E)>& );
 
         
 };

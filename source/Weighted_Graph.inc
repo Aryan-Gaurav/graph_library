@@ -119,7 +119,7 @@ auto Weighted_Graph<N, E>::shortest_path_faster_algorithm(int source_node, bool 
     {
         if (is_negative_cycle == true)
         {
-            ans[i].set_value(node[i], node[i], INF);
+            ans[i].set_value(node[i], node[i], -INF);
         }
         else // no negative cycle is present
         {
@@ -182,7 +182,7 @@ auto Weighted_Graph<N, E>::single_source_shortest_path(N &src, const std::functi
 
 template<typename N, typename E> 
 template<typename T> 
-auto Weighted_Graph<N, E>::all_pair_shortest_path(const std::function<T(E)> &fun)
+auto Weighted_Graph<N, E>::all_pair_shortest_path(const std::function<T(E)> &get_weight) //Floyd Warshall Algorithm, Runtime O(V^3)
 {
     if (std::is_integral<T>::value == false && std::is_floating_point<T>::value == false) //this means the return type is neither integral nor floating point
     {
@@ -198,51 +198,48 @@ auto Weighted_Graph<N, E>::all_pair_shortest_path(const std::function<T(E)> &fun
 
     using type = typename get_data_type<std::is_integral<T>::value>::type; //find which type of variable to use
 
-    type dis[n][n];
+    type distance[n][n];
 
-    for (size_t i = 0; i < n; i++) //filling the distance matric
+    for (size_t from = 0; from < n; from++) //filling the distance matric
     {
-        for (size_t j = 0; j < n; j++)
+        for (size_t to = 0; to < n; to++)
         {
-            if (i == j)
+            if (from == to)
             {
-                dis[i][i] = 0;
+                distance[from][from] = 0;
             }
             else
             {
-                dis[i][j] = INF;
+                distance[from][to] = INF;
             }
         }
     }
 
-    for (size_t i = 0; i < n; i++)
+    for (size_t from = 0; from < n; from++)
     {
-        for (auto &[to, edge] : adj[i])
+        for (auto &[to, edge] : adj[from])
         {
-            dis[i][to] = min(dis[i][to], fun(edge));
+            distance[from][to] =  get_weight(edge);
         }
     }
 
-    for (size_t k = 0; k < n; k++)
+    for (size_t intermediate = 0; intermediate < n; intermediate++)
     {
-        for (size_t i = 0; i < n; i++)
+        for (size_t from = 0; from < n; from++)
         {
-            for (size_t j = 0; j < n; j++)
+            for (size_t to = 0; to < n; to++)
             {
-                if (dis[i][k] + dis[k][j] < dis[i][j] )
-                {
-                    dis[i][j] = dis[i][k] + dis[k][j];
-                }
+                distance[from][to] = std::min(distance[from][to], distance[from][intermediate] + distance[intermediate][to]);
             }
         }
     }
     std::vector<node_pair<N, type> > ans(n*n);
 
-    for (size_t i = 0; i < n; i++)
+    for (size_t from = 0; from < n; from++)
     {
-        for (size_t j = 0; j < n; j++)
+        for (size_t to = 0; to < n; to++)
         {
-            ans[i * n + j].set_value(node[i], node[j], dis[i][j]);
+            ans[from * n + to].set_value(node[from], node[to], distance[from][to]);
         }
     }
 
@@ -252,7 +249,7 @@ auto Weighted_Graph<N, E>::all_pair_shortest_path(const std::function<T(E)> &fun
 
 template<typename N, typename E> 
 template<typename T> 
-bool Weighted_Graph<N, E>::is_negative_cycle(const std::function <T(E)> &get_weight)
+bool Weighted_Graph<N, E>::is_negative_weight_cycle(N &src, const std::function <T(E)> &get_weight)
 {
     if (std::is_integral<T>::value == false && std::is_floating_point<T>::value == false) //this means the return type is neither integral nor floating point
     {
@@ -286,7 +283,7 @@ bool Weighted_Graph<N, E>::is_negative_cycle(const std::function <T(E)> &get_wei
     else
     {
         bool checker = false;
-        shortest_path_faster_algorithm(0, checker, get_weight);
+        shortest_path_faster_algorithm(idx[src], checker, get_weight);
         return checker;
     }
 }
