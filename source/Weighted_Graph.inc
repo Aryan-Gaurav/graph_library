@@ -6,6 +6,8 @@
 
 
 //Function definations for Weighted Graph class
+
+
 template<typename N, typename E> 
 template<typename T> 
 auto Weighted_Graph<N, E>::dijkstra(int source_node, const std::function <T(E)> &get_weight)
@@ -63,6 +65,80 @@ auto Weighted_Graph<N, E>::dijkstra(int source_node, const std::function <T(E)> 
 }
 
 
+template<typename N, typename E> 
+template<typename T> 
+auto Weighted_Graph<N, E>::shortest_path_faster_algorithm(int source_node, bool &is_negative_cycle, const std::function <T(E)> &get_weight) 
+{
+    /*
+    
+    The Shortest Path Faster Algorithm (SPFA) is an improvement of the Bellman–​Ford algorithm for finding single source shortest path in a weighted graph.
+    Read more at https://cp-algorithms.com/graph/bellman_ford.htmlhttps://cp-algorithms.com/graph/bellman_ford.html
+    https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
+
+    */
+
+    using type = typename get_data_type<std::is_integral<T>::value>::type; //find which type of variable to use
+
+    std::vector<int> parent(n, -1), number_of_relaxation(n, 0);
+    std::vector<type> distance(n, INF);
+    bool inqueue[n] = {false};
+    queue<int> Queue;
+
+    Queue.push(source_node);
+    distance[source_node] = 0;
+    inqueue[source_node] = true;
+    number_of_relaxation[source_node] = 1;
+
+    while (Queue.empty() == false && is_negative_cycle == false)
+    {
+        auto current_node = Queue.front();
+        Queue.pop();
+        inqueue[current_node] = false;
+        for (auto &[adjacent_node, edge] : adj[current_node])
+        {
+            if (auto new_weight = distance[current_node] + get_weight(edge); new_weight < distance[adjacent_node])
+            {
+                distance[adjacent_node] = new_weight;
+                parent[adjacent_node] = current_node;
+                if (inqueue[adjacent_node] == false)
+                {
+                    Queue.push(adjacent_node);
+                    inqueue[adjacent_node] = true;
+                    number_of_relaxation[adjacent_node] += 1;
+                    if (number_of_relaxation[adjacent_node] > n) //if a node is used to relax more than n time then there must be a negtive cycle
+                    {
+                        is_negative_cycle = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    std::vector<traversal<N,type> > ans(n);
+    for (size_t i = 0; i < n; i++)
+    {
+        if (is_negative_cycle == true)
+        {
+            ans[i].set_value(node[i], node[i], INF);
+        }
+        else // no negative cycle is present
+        {
+            if (parent[i] != -1)
+            {
+                ans[i].set_value(node[i], node[parent[i]], distance[i]);
+            }
+            else
+            {
+                ans[i].set_value(node[i], node[i], distance[i]);
+            }
+        }
+    }
+
+    return ans;
+
+}
+
+
 
 template<typename N, typename E> 
 template<typename T> 
@@ -93,12 +169,124 @@ auto Weighted_Graph<N, E>::single_source_shortest_path(N &src, const std::functi
         }
     }
 
-    // if (is_negative_weight == false)
-    // {
+    if (is_negative_weight == false)
+    {
         return dijkstra(idx[src], get_weight);
-    // }
-    // else
-    // {
-    //     return shortest_path_faster_algorithm(idx[src], get_weight);
-    // }
+    }
+    else
+    {
+        bool is_negative_cycle = false;
+        return shortest_path_faster_algorithm(idx[src], is_negative_cycle, get_weight);
+    }
+}
+
+template<typename N, typename E> 
+template<typename T> 
+auto Weighted_Graph<N, E>::all_pair_shortest_path(const std::function<T(E)> &fun)
+{
+    if (std::is_integral<T>::value == false && std::is_floating_point<T>::value == false) //this means the return type is neither integral nor floating point
+    {
+        /*
+            Donot use assert false beacuse it can be overrideen by -DNDEBUG flag
+            Read more at https://stackoverflow.com/questions/57908992/better-alternatives-to-assertfalse-in-c-c
+        */
+        //assert(false)
+        std ::cout << "You did not pass a valid function in All Pair Shortest Path. Please provide a valid function." << std ::endl;
+        std ::cout << "Now the program will abort" << std ::endl;
+        std ::abort();
+    }
+
+    using type = typename get_data_type<std::is_integral<T>::value>::type; //find which type of variable to use
+
+    type dis[n][n];
+
+    for (size_t i = 0; i < n; i++) //filling the distance matric
+    {
+        for (size_t j = 0; j < n; j++)
+        {
+            if (i == j)
+            {
+                dis[i][j] = 0;
+            }
+            else
+            {
+                dis[i][j] = INF;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < n; i++)
+    {
+        for (auto &[to, edge] : adj[i])
+        {
+            dis[i][to] = min(dis[i][to], fun(edge));
+        }
+    }
+
+    for (size_t k = 0; k < n; k++)
+    {
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < n; j++)
+            {
+                if (dis[i][k] + dis[k][j] < dis[i][j] )
+                {
+                    dis[i][j] = dis[i][k] + dis[k][j];
+                }
+            }
+        }
+    }
+    std::vector<node_pair<N, type> > ans(n*n);
+
+    for (size_t i = 0; i < n; i++)
+    {
+        for (size_t j = 0; j < n; j++)
+        {
+            ans[i * n + j].set_value(node[i], node[j], dis[i][j]);
+        }
+    }
+
+    return ans;
+}
+
+
+template<typename N, typename E> 
+template<typename T> 
+bool Weighted_Graph<N, E>::is_negative_cycle(const std::function <T(E)> &get_weight)
+{
+    if (std::is_integral<T>::value == false && std::is_floating_point<T>::value == false) //this means the return type is neither integral nor floating point
+    {
+        /*
+            Donot use assert false beacuse it can be overrideen by -DNDEBUG flag
+            Read more at https://stackoverflow.com/questions/57908992/better-alternatives-to-assertfalse-in-c-c
+        */
+        //assert(false)
+        std ::cout << "You did not pass a valid function in Negative Cycle Detection. Please provide a valid function." << std ::endl;
+        std ::cout << "Now the program will abort" << std ::endl;
+        std ::abort();
+    }
+
+    bool is_negative_weight = false;
+    for (size_t i = 0; i < n && is_negative_weight == false; i++)
+    {
+        for (auto &[w, edge] : adj[i])
+        {
+            if (get_weight(edge) < 0)
+            {
+                is_negative_weight = true;
+                break;
+            }
+        }
+    }
+
+    if (is_negative_weight == false)
+    {
+        return false;
+    }
+    else
+    {
+        bool checker = false;
+        shortest_path_faster_algorithm(0, checker, get_weight);
+        return checker;
+    }
 }

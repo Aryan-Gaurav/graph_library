@@ -52,10 +52,9 @@ template<typename N, typename T>
 struct node_pair
 {
         N from,to;
-        T dis;
+        T distance;
         node_pair();
         void set_value(N, N, T);
-        void print();
 };
 
 template<typename N, typename E>
@@ -187,7 +186,7 @@ class Weighted_Graph:
         template<typename T>
             auto dijkstra(int, const std::function <T(E)>& );   //total 2 types of each for float and int
         template<typename T>
-            auto shortest_path_faster_algorithm(int, const std::function <T(E)>& );
+            auto shortest_path_faster_algorithm(int, bool&, const std::function <T(E)>& );
     protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
@@ -208,7 +207,7 @@ class Weighted_Graph:
         template<typename T>
             auto all_pair_shortest_path( const std::function <T(E)>& );
         template<typename T>
-            bool is_neg_cycle( std::function< T (E)> );
+            bool is_negative_cycle( const std::function <T(E)>& );
 
         
 };
@@ -247,6 +246,7 @@ struct full_edge
 
 #include "gmap.inc"
 #include "struct_traversal.inc"
+#include "struct_node_pair.inc"
 #include "disjoint_set_union.inc"
 #include "get_data_type.inc"
 #include "Base.inc"
