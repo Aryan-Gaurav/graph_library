@@ -64,9 +64,8 @@ void Base<N,E> :: add_edge(N &u, N &v, E ed)
 //Implementation of Breadth First Search
 
 template <typename N, typename E>
-std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
+std::vector<traversal<N, int>> Base<N, E>::bfs(int src, int depth)
 {
-    int src = idx[source_node];
     bool vis[n] = {0};
     int dis[n];
     std::queue<int> que;
@@ -90,7 +89,21 @@ std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
             }
         }
     }
+    for (size_t i = 0; i < n; i++)
+    {
+        if (vis[i] == false)
+        {
+            ans.push_back(traversal<N, int>(node[i], node[i], 2e9));
+        }
+    }
     return ans;
+}
+
+template <typename N, typename E>
+std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
+{
+   int src = idx[source_node];
+   return bfs(src,depth);
 }
 
 //Implementation of Depth First Search
