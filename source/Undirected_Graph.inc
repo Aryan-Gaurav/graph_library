@@ -1,6 +1,6 @@
 #include <queue>
 #include <array>
-#include <cstring>
+#include <cstring> //for using memeset to set values 0 and -1 in arrays
 #include <type_traits> //for using std::is_integral<T>::value
 
 template<class N, class E> 

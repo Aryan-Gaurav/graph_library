@@ -185,9 +185,9 @@ class Weighted_Graph:
 {
     private:
         template<typename T>
-            auto dijkstra(int, std::function< T (E)> );   //total 2 types of each for float and int
+            auto dijkstra(int, const std::function <T(E)>& );   //total 2 types of each for float and int
         template<typename T>
-            auto bellman_ford(int, std::function< T (E)> );
+            auto shortest_path_faster_algorithm(int, const std::function <T(E)>& );
     protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: idx;
         using Base<N, E> :: node;
@@ -204,9 +204,9 @@ class Weighted_Graph:
         
         
         template<typename T>
-            auto single_source_shortest_path( N&, std::function< T (E)> );
+            auto single_source_shortest_path( N&, const std::function <T(E)>& );
         template<typename T>
-            auto all_pair_shortest_path( std::function< T (E)> );
+            auto all_pair_shortest_path( const std::function <T(E)>& );
         template<typename T>
             bool is_neg_cycle( std::function< T (E)> );
 
@@ -247,11 +247,12 @@ struct full_edge
 
 #include "gmap.inc"
 #include "struct_traversal.inc"
-#include "Base.inc"
-#include "Directed_Graph.inc"
 #include "disjoint_set_union.inc"
 #include "get_data_type.inc"
+#include "Base.inc"
+#include "Directed_Graph.inc"
 #include "Undirected_Graph.inc"
+#include "Weighted_Graph.inc"
 #include "graph.inc"
 
 #endif
