@@ -121,7 +121,7 @@ public:
 
 template<typename N, typename E>
 class Directed_Graph :
-    public virtual Base<N, E>
+    public virtual Base<N, E>   //try to write different algo for single source shortest path for a DAG
 {
     protected:                  //changed the scope of using. Earlier was in public, so was exposed to the user and can be misused
         using Base<N, E> :: node;
