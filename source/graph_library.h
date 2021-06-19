@@ -54,6 +54,7 @@ struct node_pair
         N from,to;
         T distance;
         node_pair();
+        node_pair(N,N,T);
         void set_value(N, N, T);
 };
 
@@ -104,8 +105,8 @@ public:
     void add_edge(N&, N&, E = 1 );
     // void remove_node(N&);
     // void remove_edge(N&, N&);
-    std::vector<traversal<N,int32_t> > bfs(N&, int depth = INT32_MAX);
-    std::vector<traversal<N,int32_t> > dfs(N&, int depth = INT32_MAX);
+    std::vector<traversal<N,int> > bfs(N&, int depth = INT32_MAX);
+    std::vector<traversal<N,int> > dfs(N&, int depth = INT32_MAX);
     /*
         Read more about default arguments in functions
         https://stackoverflow.com/questions/32105975/why-cant-i-have-template-and-default-arguments
@@ -166,7 +167,7 @@ class Undirected_Graph:
 };
 
 
-template<typename N,typename E> //see about how to implement only typename N in this class so that if true is passed is_weighted then only take 4th argument otherwise no
+template<typename N,typename E>
 class Unweighted_Graph:
     public virtual Base<N, E>
 {

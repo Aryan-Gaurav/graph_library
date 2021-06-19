@@ -216,11 +216,11 @@ void test_case_3()//Example of all pair shortest path from Introduction to Algor
         return long(x);
     };
 
-    auto apst = G.all_pair_shortest_path<long>(get_weight_3);
+    auto apsp = G.all_pair_shortest_path<long>(get_weight_3);
 
-    assert(apst.size() == 25);
+    assert(apsp.size() == 25);
 
-    sort(apst.begin(), apst.end(), [&](node_pair<int, int64_t> &a, node_pair<int, int64_t> &b)
+    sort(apsp.begin(), apsp.end(), [&](node_pair<int, int64_t> &a, node_pair<int, int64_t> &b)
          {
              if (a.from != b.from)
              {
@@ -245,9 +245,9 @@ void test_case_3()//Example of all pair shortest path from Introduction to Algor
             int index = (from - 1) * 5 + (to - 1);
             int i = index / 5;
             int j = index % 5;
-            assert(apst[index].from == from);
-            assert(apst[index].to == to);
-            assert(apst[index].distance == distance[i][j]);
+            assert(apsp[index].from == from);
+            assert(apsp[index].to == to);
+            assert(apsp[index].distance == distance[i][j]);
         }
     }
 }

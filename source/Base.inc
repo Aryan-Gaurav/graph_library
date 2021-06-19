@@ -23,7 +23,7 @@ void Base<N, E>::add_node(N &temp)
         idx[temp] = n;
         node[n] = temp;
         adj.push_back({}); //increase the size by 1
-        n++;
+        n += 1;
     }
 }
 
@@ -106,7 +106,7 @@ template <typename N, typename E>
 std::vector<traversal<N, int>> Base<N, E>::bfs(N &source_node, int depth)
 {
    int src = idx[source_node];
-   return bfs(src, false, depth);
+   return  breadth_first_search_by_index(src, false, depth);
 }
 
 //Implementation of Depth First Search

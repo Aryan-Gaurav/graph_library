@@ -7,6 +7,14 @@ node_pair<N, T> :: node_pair()
 }
 
 template<typename N, typename T>
+node_pair<N, T> :: node_pair(N a, N b, T dis)
+{
+    from = a;
+    to = b;
+    distance = dis;
+}
+
+template<typename N, typename T>
 void node_pair<N, T> :: set_value(N a, N b, T dis)
 {
     from = a;
